@@ -1,4 +1,27 @@
-﻿## Схема данных
+﻿## Запуск проекта
+
+1. Клонируем репозиторий:
+    ```bash
+    git clone <репозиторий>
+    cd <repo-name>
+    ```
+2. Настраиваем переменные окружения:  
+   Создаем локальный файл `.env` в корне проекта, настраиваем переменные окружения по примеру из [.env.example](.env.example)
+3. Запустите контейнеры с помощью Docker Compose в корне проекта:
+    ```bash
+    docker-compose up --build
+    ```
+## Миграции
+
+#### Как создать новую миграцию
+
+```bash
+dotnet ef migrations add "Название миграции" --project RoomsBooking.Infrastructure --startup-project RoomsBooking.API
+```
+
+##### Применять миграции не требуется, это делается при старте приложения.
+
+## Схема данных
 
 <img src="database-diagram.png" width="600" alt="Диаграмма базы данных">
 
