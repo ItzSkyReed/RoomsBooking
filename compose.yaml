@@ -1,0 +1,40 @@
+﻿services:
+  rooms_booking:
+    container_name: rooms_booking
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=rooms_booking_postgres;Port=5432;Database=rooms_db;Username=postgres;Password=${DB_PASSWORD} # Пароль из .env
+      - JwtOptions__SecretKey=${JWT_SECRET_KEY} # JWT_SECRET_KEY из .env
+      - ASPNETCORE_ENVIRONMENT=Development
+    image: app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    build:
+      context: .
+      dockerfile: RoomsBooking.API/Dockerfile
+    depends_on:
+      rooms_booking_postgres:
+        condition: service_healthy
+
+  rooms_booking_postgres:
+    image: postgres:18-alpine
+    container_name: rooms_booking_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=rooms_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # Из .env
+      - POSTGRES_PORT=5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - rooms_booking_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d rooms_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  rooms_booking_postgres_data:
