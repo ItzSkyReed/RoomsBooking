@@ -1,8 +1,10 @@
-﻿using RoomsBooking.Application.Auth.Commands;
+﻿using RoomsBooking.Application.Authentication.Commands;
 
 
 using FluentValidation;
-namespace RoomsBooking.Application.Auth.Validators;
+using RoomsBooking.Application.Authentication.Commands;
+
+namespace RoomsBooking.Application.Authentication.Validators;
 
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {

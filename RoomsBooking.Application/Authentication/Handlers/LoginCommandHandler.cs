@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.Auth.Commands;
-using RoomsBooking.Application.Auth.Dtos;
+using RoomsBooking.Application.Authentication.Dtos;
+using RoomsBooking.Application.Authentication.Commands;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions.User;
-
-namespace RoomsBooking.Application.Auth.Handlers;
+namespace RoomsBooking.Application.Authentication.Handlers;
 
 public class LoginCommandHandler(
     IAppDbContext context,

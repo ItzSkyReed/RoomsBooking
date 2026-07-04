@@ -20,7 +20,7 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
             Scheme = "bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme."
+            Description = "Заголовок Authentication Bearer схемы, содержащий JWT токен."
         };
 
         document.Components ??= new OpenApiComponents();

@@ -1,3 +1,3 @@
-﻿namespace RoomsBooking.Application.Auth.Dtos;
+﻿namespace RoomsBooking.Application.Authentication.Dtos;
 
 public record AuthResponseDto(string AccessToken, string RefreshToken);

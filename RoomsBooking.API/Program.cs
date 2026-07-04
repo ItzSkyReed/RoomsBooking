@@ -94,7 +94,8 @@ internal sealed class Program
                 options
                     .DisableAgent()
                     .DisableMcp()
-                    .DisableTelemetry();
+                    .DisableTelemetry()
+                    .HideClientButton();
             });
         }
 

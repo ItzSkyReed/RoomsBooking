@@ -1,13 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.Auth.Commands;
-using RoomsBooking.Application.Auth.Dtos;
+using RoomsBooking.Application.Authentication.Commands;
+using RoomsBooking.Application.Authentication.Dtos;
 using RoomsBooking.Application.Common.Authentication;
 
 namespace RoomsBooking.API.Endpoints;
 
-public static class AuthEndpoints
+public static class AuthenticationEndpoints
 {
     private const bool CookieSecureMode = false; // ! False пока нет HTTPS
 
