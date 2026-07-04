@@ -19,21 +19,29 @@ public static class RoomEndpoints
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces<RoomDto>()
-            .WithSummary("Добавление новой комнаты")
-            .WithDescription("Создает комнату, возвращает её путь в Location заголовке и сущность");
+            .WithSummary("Добавление новой переговорной комнаты")
+            .WithDescription("Создает переговорную комнату, возвращает её путь в Location заголовке и сущность");
 
         group.MapGet("/{id:guid}", GetRoomByIdAsync)
             .WithName("GetRoomById")
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<RoomDto>()
-            .WithSummary("Получение информации о комнате по Id");
+            .WithSummary("Получение информации о переговорной комнате  по Id");
+
+        group.MapDelete("/{id:guid}", DeleteRoomByIdAsync)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status204NoContent)
+            .WithSummary("Удаление переговорной комнаты по Id");
+
+        group.MapDelete("/{number}", DeleteRoomByNumberAsync)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status204NoContent)
+            .WithSummary("Удаление переговорной комнаты по номеру");
     }
 
     private static async Task<IResult> CreateRoomAsync(
         [FromBody] CreateRoomRequest request,
         [FromServices] ISender mediator,
-        HttpContext httpContext,
-        [FromServices] IOptions<JwtOptions> jwtOptions,
         CancellationToken ct)
     {
         var command = new CreateRoomCommand(request.Number, request.Description, request.Capacity, request.Floor);
@@ -46,13 +54,32 @@ public static class RoomEndpoints
     private static async Task<IResult> GetRoomByIdAsync(
         [FromRoute] Guid id,
         [FromServices] ISender mediator,
-        HttpContext httpContext,
-        [FromServices] IOptions<JwtOptions> jwtOptions,
         CancellationToken ct)
     {
         var command = new GetRoomByIdCommand(id);
         var response = await mediator.Send(command, ct);
 
         return Results.Ok(response);
+    }
+
+    private static async Task<IResult> DeleteRoomByIdAsync(
+        [FromRoute] Guid id,
+        [FromServices] ISender mediator,
+        CancellationToken ct)
+    {
+        var command = new DeleteRoomByIdCommand(id);
+        await mediator.Send(command, ct);
+
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> DeleteRoomByNumberAsync(
+        [FromRoute] string number,
+        [FromServices] ISender mediator,
+        CancellationToken ct)
+    {
+        var command = new DeleteRoomByNumberCommand(number);
+        await mediator.Send(command, ct);
+        return Results.NoContent();
     }
 }
