@@ -3,7 +3,7 @@
 public sealed class RefreshToken
 {
     public Guid Id { get; private set; }
-    public string Token { get; private set; }
+    public string Token { get; private set; }= null!;
     public Guid UserId { get; private set; }
     public DateTimeOffset ExpiresAt { get; private set; }
 

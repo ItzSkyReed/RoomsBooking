@@ -3,7 +3,7 @@
 public class Room
 {
     public Guid Id { get; private set; }
-    public string Number { get; private set; }
+    public string Number { get; private set; }= null!;
     public string? Description { get; private set; }
     public short Capacity { get; private set; }
     public short Floor { get; private set; }
