@@ -6,6 +6,7 @@ using RoomsBooking.Domain.Exceptions.Room;
 
 namespace RoomsBooking.Application.UseCases.Rooms.Handlers;
 
+// TODO: Когда будет готово бронирование комнат, надо явно запрещать удаление если есть активные брони или делать мягкое удаление
 public class DeleteRoomByIdCommandHandler(
     IAppDbContext dbContext)
     : IRequestHandler<DeleteRoomByIdCommand, Unit>

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using RoomsBooking.API.Requests;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.UseCases.Rooms.Commands;
 using RoomsBooking.Application.UseCases.Rooms.Dtos;
@@ -33,10 +34,17 @@ public static class RoomEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по Id");
 
+
         group.MapDelete("/{number}", DeleteRoomByNumberAsync)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по номеру");
+
+        group.MapPatch("/{id:guid}", PatchRoomAsync)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .Produces(StatusCodes.Status204NoContent)
+            .WithSummary("Изменение данных комнаты");
     }
 
     private static async Task<IResult> CreateRoomAsync(
@@ -80,6 +88,18 @@ public static class RoomEndpoints
     {
         var command = new DeleteRoomByNumberCommand(number);
         await mediator.Send(command, ct);
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> PatchRoomAsync(
+        [FromRoute] Guid id,
+        [FromBody] PatchRoomRequest request,
+        [FromServices] ISender mediator,
+        CancellationToken ct)
+    {
+        var command = new PatchRoomCommand(id, request.Number, request.Description, request.IsDescriptionSet, request.Capacity, request.Floor);
+        await mediator.Send(command, ct);
+
         return Results.NoContent();
     }
 }

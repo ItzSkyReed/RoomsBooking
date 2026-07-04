@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using RoomsBooking.API.Requests;
 using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Application.Common.Authentication;
