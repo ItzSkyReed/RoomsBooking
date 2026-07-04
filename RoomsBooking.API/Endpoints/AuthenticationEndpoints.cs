@@ -14,9 +14,7 @@ public static class AuthenticationEndpoints
     public static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/auth")
-            .WithTags("Authentication")
-            .WithDisplayName("Аутентификация")
-            .WithDescription("Эндпоинты для управления сессиями пользователей, регистрации и обновления токенов.");
+            .WithTags("Authentication");
 
         group.MapPost("/register", RegisterAsync)
             .ProducesProblem(StatusCodes.Status409Conflict)
