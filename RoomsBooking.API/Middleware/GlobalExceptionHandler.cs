@@ -20,6 +20,13 @@ public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logg
 
         switch (exception)
         {
+            // Ошибки самого HTTP-запроса (невалидный JSON, неверные кавычки)
+            case BadHttpRequestException badHttpRequestException:
+                problemDetails.Title = "Некорректный HTTP-запрос";
+                problemDetails.Status = badHttpRequestException.StatusCode;
+                problemDetails.Detail = badHttpRequestException.InnerException?.Message ?? badHttpRequestException.Message;
+                break;
+
             // Ошибки валидации от FluentValidation
             case ValidationException validationException:
                 problemDetails.Title = "Ошибка валидации запроса";
