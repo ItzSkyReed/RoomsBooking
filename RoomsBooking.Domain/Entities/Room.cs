@@ -2,6 +2,10 @@
 
 public class Room
 {
+    public const short MinCapacity = 0;
+    public const int MaxNumberLength = 100;
+    public const int MaxDescriptionLength = 2000;
+
     public Guid Id { get; private set; }
     public string Number { get; private set; }= null!;
     public string? Description { get; private set; }
