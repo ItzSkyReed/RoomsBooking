@@ -105,7 +105,8 @@ internal sealed class Program
 
         var apiV1 = app.MapGroup("/api/v1");
 
-        apiV1.MapAuthEndpoints();
+        apiV1.MapAuthenticationEndpoints();
+        apiV1.MapRoomEndpoints();
 
         Console.WriteLine(app.Environment.EnvironmentName);
         await app.RunAsync();
