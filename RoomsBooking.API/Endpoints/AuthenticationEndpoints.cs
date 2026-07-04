@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.Authentication.Commands;
-using RoomsBooking.Application.Authentication.Dtos;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Application.Common.Authentication;
 
 namespace RoomsBooking.API.Endpoints;
@@ -11,7 +11,7 @@ public static class AuthenticationEndpoints
 {
     private const bool CookieSecureMode = false; // ! False пока нет HTTPS
 
-    public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
+    public static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/auth")
             .WithTags("Authentication")
@@ -20,18 +20,18 @@ public static class AuthenticationEndpoints
 
         group.MapPost("/register", RegisterAsync)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .Produces<AccessTokenDto>()
+            .Produces<AuthResponseDto>()
             .ProducesValidationProblem()
             .WithSummary("Регистрация нового пользователя")
-            .WithDescription("Создает аккаунт и сразу возвращает Access Token и устанавливается Refresh Token в Cookie");
+            .WithDescription("Создает аккаунт, возвращает пользователя и access token, также устанавливает refresh token в Cookie");
 
         group.MapPost("/login", LoginAsync)
-            .Produces<AccessTokenDto>()
+            .Produces<AuthResponseDto>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithSummary("Вход в аккаунт")
-            .WithDescription("Производится вход в аккаунт, возвращается Access Token и устанавливается Refresh Token в Cookie");
+            .WithDescription("Производит вход в аккаунт, возвращает пользователя и access token, также устанавливает refresh token в Cookie");
 
         group.MapPost("/refresh", RefreshAsync)
             .Produces<AccessTokenDto>()
@@ -39,12 +39,12 @@ public static class AuthenticationEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithSummary("Обновление access/refresh токенов")
             .WithDescription(
-                "Производится удаление старого Refresh Token из БД сервера, возвращается новый Access Token, устанавливается новый Refresh Token в Cookie");
+                "Удаляет старый Refresh Token из БД сервера, возвращается новый access token, устанавливается новый refresh token в Cookie");
 
         group.MapPost("/logout", LogoutAsync)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Выход из аккаунта")
-            .WithDescription("Производится удаление Refresh Token из Cookie и БД сервера")
+            .WithDescription("Производит удаление refresh token из Cookie и БД сервера")
             .RequireAuthorization();
     }
 
@@ -56,11 +56,11 @@ public static class AuthenticationEndpoints
         CancellationToken ct)
     {
         var command = new RegisterCommand(request.Email, request.Password, request.Name);
-        var authResponse = await mediator.Send(command, ct);
+        var (body, refreshToken) = await mediator.Send(command, ct);
 
-        SetRefreshTokenCookie(httpContext, authResponse.RefreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
+        SetRefreshTokenCookie(httpContext, refreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
 
-        return Results.Ok(new AccessTokenDto(authResponse.AccessToken));
+        return Results.Ok(body);
     }
 
     private static async Task<IResult> LoginAsync(
@@ -71,11 +71,11 @@ public static class AuthenticationEndpoints
         CancellationToken ct)
     {
         var command = new LoginCommand(request.Email, request.Password);
-        var authResponse = await mediator.Send(command, ct);
+        var (body, refreshToken) = await mediator.Send(command, ct);
 
-        SetRefreshTokenCookie(httpContext, authResponse.RefreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
+        SetRefreshTokenCookie(httpContext, refreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
 
-        return Results.Ok(new AccessTokenDto(authResponse.AccessToken));
+        return Results.Ok(body);
     }
 
     private static async Task<IResult> RefreshAsync(
@@ -89,11 +89,11 @@ public static class AuthenticationEndpoints
 
         var command = new RefreshTokenCommand(refreshToken);
 
-        var authResponse = await mediator.Send(command, ct);
+        var (accessToken, newRefreshToken) = await mediator.Send(command, ct);
 
-        SetRefreshTokenCookie(httpContext, authResponse.RefreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
+        SetRefreshTokenCookie(httpContext, newRefreshToken, jwtOptions.Value.RefreshTokenExpirationDays);
 
-        return Results.Ok(new AccessTokenDto(authResponse.AccessToken));
+        return Results.Ok(accessToken);
     }
 
     private static async Task<IResult> LogoutAsync(

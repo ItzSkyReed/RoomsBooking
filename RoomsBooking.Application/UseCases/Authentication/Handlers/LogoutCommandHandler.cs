@@ -1,10 +1,10 @@
 ﻿
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RoomsBooking.Application.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.Interfaces;
 
-namespace RoomsBooking.Application.Authentication.Handlers;
+namespace RoomsBooking.Application.UseCases.Authentication.Handlers;
 
 public class LogoutCommandHandler(IAppDbContext context) : IRequestHandler<LogoutCommand>
 {

@@ -1,10 +1,10 @@
-﻿using RoomsBooking.Application.Authentication.Commands;
+﻿using RoomsBooking.Application.UseCases.Authentication.Commands;
 
 
 using FluentValidation;
-using RoomsBooking.Application.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
 
-namespace RoomsBooking.Application.Authentication.Validators;
+namespace RoomsBooking.Application.UseCases.Authentication.Validators;
 
 public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {

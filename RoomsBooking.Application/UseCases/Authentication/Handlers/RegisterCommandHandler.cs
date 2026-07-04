@@ -1,23 +1,24 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.Authentication.Commands;
-using RoomsBooking.Application.Authentication.Dtos;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions.User;
+using UserMapper = RoomsBooking.Application.UseCases.Users.Mappers.UserMapper;
 
-namespace RoomsBooking.Application.Authentication.Handlers;
+namespace RoomsBooking.Application.UseCases.Authentication.Handlers;
 
 public class RegisterCommandHandler(
     IAppDbContext dbContext,
     IPasswordHasher passwordHasher,
     IJwtProvider jwtProvider,
     IOptions<JwtOptions> jwtOptions)
-    : IRequestHandler<RegisterCommand, AuthResponseDto>
+    : IRequestHandler<RegisterCommand, (AuthResponseDto Body, string RefreshToken)>
 {
-    public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var emailExists = await dbContext.Users
             .AnyAsync(u => u.Email == request.Email.ToLowerInvariant(), cancellationToken);
@@ -41,6 +42,6 @@ public class RegisterCommandHandler(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new AuthResponseDto(accessToken, refreshToken);
+        return new ValueTuple<AuthResponseDto, string>(new AuthResponseDto(UserMapper.ToUserDto(user), accessToken), refreshToken);
     }
 }

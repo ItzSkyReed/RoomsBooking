@@ -1,24 +1,23 @@
-﻿
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.Authentication.Dtos;
-using RoomsBooking.Application.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions;
 using RoomsBooking.Domain.Exceptions.User;
 
-namespace RoomsBooking.Application.Authentication.Handlers;
+namespace RoomsBooking.Application.UseCases.Authentication.Handlers;
 
 public class RefreshTokenCommandHandler(
     IAppDbContext dbContext,
     IJwtProvider jwtProvider,
     IOptions<JwtOptions> jwtOptions)
-    : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
+    : IRequestHandler<RefreshTokenCommand, (AccessTokenDto accessToken, string RefreshToken)>
 {
-    public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<(AccessTokenDto accessToken, string RefreshToken)> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var oldTokenEntity = await dbContext.RefreshTokens
             .SingleOrDefaultAsync(x => x.Token == request.RefreshToken, cancellationToken);
@@ -33,7 +32,6 @@ public class RefreshTokenCommandHandler(
         if (user == null)
             throw new UserNotFoundException();
 
-
         // Ротация
         dbContext.RefreshTokens.Remove(oldTokenEntity);
 
@@ -46,6 +44,6 @@ public class RefreshTokenCommandHandler(
         dbContext.RefreshTokens.Add(newRefreshTokenEntity);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new AuthResponseDto(newAccessToken, newRefreshToken);
+        return new ValueTuple<AccessTokenDto, string>(new AccessTokenDto(newAccessToken), newRefreshToken);
     }
 }
