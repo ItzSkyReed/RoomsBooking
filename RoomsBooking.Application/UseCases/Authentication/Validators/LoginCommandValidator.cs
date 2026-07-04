@@ -1,8 +1,5 @@
 ﻿using RoomsBooking.Application.UseCases.Authentication.Commands;
-
-
 using FluentValidation;
-using RoomsBooking.Application.UseCases.Authentication.Commands;
 
 namespace RoomsBooking.Application.UseCases.Authentication.Validators;
 
