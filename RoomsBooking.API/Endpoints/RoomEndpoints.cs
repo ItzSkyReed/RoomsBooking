@@ -21,7 +21,7 @@ public static class RoomEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .Produces<RoomDto>()
+            .Produces<RoomDto>(StatusCodes.Status201Created)
             .WithSummary("Добавление новой переговорной комнаты")
             .WithDescription("Создает переговорную комнату, возвращает её путь в Location заголовке и сущность");
 
