@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.UseCases.Authentication.Commands;
-using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions.User;
 using UserMapper = RoomsBooking.Application.UseCases.Users.Mappers.UserMapper;
@@ -21,7 +21,7 @@ public class RegisterCommandHandler(
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var emailExists = await dbContext.Users
-            .AnyAsync(u => u.Email == request.Email.ToLowerInvariant(), cancellationToken);
+            .AnyAsync(u => u.Email.ToLower() == request.Email.ToLower(), cancellationToken);
 
         if (emailExists)
             throw new UserAlreadyExistsException(request.Email);

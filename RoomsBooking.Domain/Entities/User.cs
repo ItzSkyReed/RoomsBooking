@@ -6,18 +6,6 @@ public sealed class User
 {
     private static readonly EmailAddressAttribute EmailAttribute = new();
 
-    public Guid Id { get; private set; }
-
-    /// <summary>
-    /// Используется как login для входа, уникальный
-    /// </summary>
-    public string Email { get; private set; } = null!;
-
-    public string PasswordHash { get; private set; } = null!;
-    public DateTimeOffset CreatedAt { get; private set; }
-
-    public string Name { get; private set; } = null!;
-
     private User()
     {
     } // Для EF Core
@@ -34,10 +22,22 @@ public sealed class User
             throw new ArgumentException("Хэш пароля пустой", nameof(passwordHash));
 
         Id = Guid.CreateVersion7();
-        Email = email.ToLowerInvariant();
+        Email = email;
         PasswordHash = passwordHash;
         CreatedAt = DateTimeOffset.UtcNow;
 
         Name = name;
     }
+
+    public Guid Id { get; private set; }
+
+    /// <summary>
+    /// Используется как login для входа, уникальный
+    /// </summary>
+    public string Email { get; private set; } = null!;
+
+    public string PasswordHash { get; private set; } = null!;
+    public DateTimeOffset CreatedAt { get; private set; }
+
+    public string Name { get; private set; } = null!;
 }

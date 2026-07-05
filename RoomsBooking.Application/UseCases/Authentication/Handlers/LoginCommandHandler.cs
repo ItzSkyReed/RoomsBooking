@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.UseCases.Authentication.Dtos;
-using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions.User;
 using UserMapper = RoomsBooking.Application.UseCases.Users.Mappers.UserMapper;
@@ -21,7 +21,7 @@ public class LoginCommandHandler(
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await context.Users
-            .SingleOrDefaultAsync(u => u.Email == request.Email.ToLowerInvariant(), cancellationToken);
+            .SingleOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower(), cancellationToken);
 
         if (user == null)
             throw new UserNotFoundException(request.Email);
