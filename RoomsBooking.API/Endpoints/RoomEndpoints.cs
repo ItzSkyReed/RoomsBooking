@@ -64,7 +64,7 @@ public static class RoomEndpoints
         [FromServices] ISender mediator,
         CancellationToken ct)
     {
-        var command = new GetRoomByIdCommand(id);
+        var command = new GetRoomByIdQuery(id);
         var response = await mediator.Send(command, ct);
 
         return Results.Ok(response);
