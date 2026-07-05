@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using RoomsBooking.Application.UseCases.Rooms.Queries;
 
 namespace RoomsBooking.API.Requests;
 
@@ -7,12 +8,10 @@ public record CreateRoomRequest(string Number, string? Description, short Capaci
 
 public class PatchRoomRequest
 {
+    private string? _description;
     public short? Capacity { get; set; }
     public short? Floor { get; set; }
     public string? Number { get; set; }
-
-
-    private string? _description;
 
     //  передал ли клиент поле description в Body
     [JsonIgnore] // Чтоб не показывался на схеме
@@ -28,3 +27,13 @@ public class PatchRoomRequest
         }
     }
 }
+
+public record GetRoomsRequest(
+    int? MinCapacity,
+    short? Floor,
+    string? SearchTerm,
+    RoomSortBy? SortBy,
+    bool SortDescending = false,
+    int PageNumber = 1,
+    int PageSize = 20
+);

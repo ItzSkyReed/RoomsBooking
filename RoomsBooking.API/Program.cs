@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -73,6 +74,12 @@ internal sealed class Program
         builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<JwtOptions>();
+
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            // Чтобы энумы отображались строками, а не числами
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
         builder.Services.AddMediatR(cfg =>
         {

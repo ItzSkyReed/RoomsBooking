@@ -45,6 +45,13 @@ public static class RoomEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Изменение данных комнаты");
+
+        group.MapGet("/", GetRoomsAsync)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .Produces<PagedResponse<RoomDto>>()
+            .WithSummary("Поиск и фильтрация комнат");
     }
 
     private static async Task<IResult> CreateRoomAsync(
@@ -101,5 +108,17 @@ public static class RoomEndpoints
         await mediator.Send(command, ct);
 
         return Results.NoContent();
+    }
+
+    private static async Task<IResult> GetRoomsAsync(
+        [AsParameters] GetRoomsRequest request,
+        [FromServices] ISender mediator,
+        CancellationToken ct)
+    {
+        var command = new GetRoomsQuery(request.MinCapacity, request.Floor, request.SearchTerm,
+            request.SortBy, request.SortDescending, request.PageNumber, request.PageSize);
+        var response = await mediator.Send(command, ct);
+
+        return Results.Ok(response);
     }
 }
