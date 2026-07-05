@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RoomsBooking.Application.UseCases.Authentication.Dtos;
-using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Interfaces;
+using RoomsBooking.Application.UseCases.Authentication.Commands;
+using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Domain.Entities;
-using RoomsBooking.Domain.Exceptions;
+using RoomsBooking.Domain.Exceptions.Authentication;
 using RoomsBooking.Domain.Exceptions.User;
 
 namespace RoomsBooking.Application.UseCases.Authentication.Handlers;

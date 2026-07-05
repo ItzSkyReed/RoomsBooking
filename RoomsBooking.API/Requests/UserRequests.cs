@@ -1,0 +1,1 @@
+﻿namespace RoomsBooking.API.Requests;
