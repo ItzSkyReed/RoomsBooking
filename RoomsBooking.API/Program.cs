@@ -59,6 +59,15 @@ internal sealed class Program
         builder.Services.AddScoped<IAppDbContext>(provider =>
             provider.GetRequiredService<AppDbContext>());
 
+        builder.Services.AddSingleton<UniqueConstraintResolver>(sp =>
+        {
+            // временный scope только для того, чтобы вытащить IModel
+            using var scope = sp.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            return new UniqueConstraintResolver(dbContext.Model);
+        });
+
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
 
         builder.Services.AddSingleton<IJwtProvider, JwtProvider>();

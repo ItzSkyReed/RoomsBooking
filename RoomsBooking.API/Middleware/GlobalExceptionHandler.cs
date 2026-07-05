@@ -1,18 +1,22 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using RoomsBooking.Domain.Exceptions.Base;
+using RoomsBooking.Infrastructure.Persistence;
 
 namespace RoomsBooking.API.Middleware;
 
-public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+public partial class GlobalExceptionHandler(
+    ILogger<GlobalExceptionHandler> logger,
+    UniqueConstraintResolver constraintResolver) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-
         var problemDetails = new ProblemDetails
         {
             Instance = httpContext.Request.Path
@@ -55,6 +59,21 @@ public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logg
                 problemDetails.Title = "Конфликт бизнес-логики";
                 problemDetails.Status = StatusCodes.Status409Conflict;
                 problemDetails.Detail = conflictException.Message; // Текст из конкретной ошибки
+                break;
+
+            case DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx }:
+
+                problemDetails.Title = "Конфликт данных";
+                problemDetails.Status = StatusCodes.Status409Conflict;
+
+                if (constraintResolver.TryGetFields(pgEx.ConstraintName!, out var fields))
+                {
+                    problemDetails.Detail = $"Значение для поля(полей) {string.Join(", ", fields)} уже существует.";
+                    problemDetails.Extensions["fields"] = fields;
+                }
+                else
+                    problemDetails.Detail = "Запись с такими параметрами уже существует.";
+
                 break;
 
             // Все остальные непредвиденные ошибки

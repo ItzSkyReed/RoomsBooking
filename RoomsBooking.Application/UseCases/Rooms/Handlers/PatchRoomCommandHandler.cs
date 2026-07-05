@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using RoomsBooking.Application.Interfaces;
 using RoomsBooking.Application.UseCases.Rooms.Commands;
-using RoomsBooking.Domain.Exceptions.Base;
 using RoomsBooking.Domain.Exceptions.Room;
 
 namespace RoomsBooking.Application.UseCases.Rooms.Handlers;
@@ -28,15 +27,7 @@ public class PatchRoomCommandHandler(
 
         room.UpdateDetails(request.Number, request.Description, request.IsDescriptionSet, request.Capacity, request.Floor);
 
-        try
-        {
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (UniqueConstraintException)
-        {
-            // Т.к. уникальное поле одно, то занят точно номер
-            throw new RoomAlreadyExistsException(request.Number!);
-        }
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }
