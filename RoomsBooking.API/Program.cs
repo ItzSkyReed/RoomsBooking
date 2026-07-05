@@ -17,7 +17,7 @@ using Scalar.AspNetCore;
 
 namespace RoomsBooking.API;
 
-internal sealed class Program
+internal sealed partial class Program
 {
     public static async Task Main(string[] args)
     {
@@ -141,7 +141,10 @@ internal sealed class Program
         catch (Exception ex)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "Ошибка при применении миграций к базе");
+            LogApplyMigrationsError(logger, ex);
         }
     }
+
+    [LoggerMessage(LogLevel.Error, "Ошибка при применении миграций к базе")]
+    static partial void LogApplyMigrationsError(ILogger<Program> logger, Exception exception);
 }
