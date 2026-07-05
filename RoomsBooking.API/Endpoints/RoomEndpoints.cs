@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using RoomsBooking.API.Requests;
-using RoomsBooking.Application.Common.Authentication;
+using RoomsBooking.Application.Common.Dtos;
 using RoomsBooking.Application.UseCases.Rooms.Commands;
 using RoomsBooking.Application.UseCases.Rooms.Dtos;
+using RoomsBooking.Application.UseCases.Rooms.Queries;
 
 namespace RoomsBooking.API.Endpoints;
 
@@ -18,6 +18,8 @@ public static class RoomEndpoints
 
         group.MapPost("/", CreateRoomAsync)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces<RoomDto>()
             .WithSummary("Добавление новой переговорной комнаты")
@@ -25,22 +27,32 @@ public static class RoomEndpoints
 
         group.MapGet("/{id:guid}", GetRoomByIdAsync)
             .WithName("GetRoomById")
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<RoomDto>()
             .WithSummary("Получение информации о переговорной комнате  по Id");
 
         group.MapDelete("/{id:guid}", DeleteRoomByIdAsync)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по Id");
 
 
         group.MapDelete("/{number}", DeleteRoomByNumberAsync)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по номеру");
 
         group.MapPatch("/{id:guid}", PatchRoomAsync)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status204NoContent)
