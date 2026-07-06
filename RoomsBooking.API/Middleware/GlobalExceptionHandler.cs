@@ -76,6 +76,16 @@ public partial class GlobalExceptionHandler(
 
                 break;
 
+            case DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.ExclusionViolation } pgEx }:
+                problemDetails.Title = "Конфликт бронирования";
+                problemDetails.Status = StatusCodes.Status409Conflict;
+
+                if (pgEx.ConstraintName == "EXCLUDE_overlapping_bookings")
+                    problemDetails.Detail = "Выбранное время для этой комнаты пересекается с уже существующим бронированием.";
+                else
+                    problemDetails.Detail = "Произошло недопустимое пересечение данных.";
+                break;
+
             // Все остальные непредвиденные ошибки
             default:
                 LogUnexpectedHandlerException(exception.Message, exception); // Логируем именно непредвиденные
