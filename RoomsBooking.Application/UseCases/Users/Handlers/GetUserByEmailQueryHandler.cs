@@ -15,7 +15,7 @@ public class GetUserByEmailQueryHandler(
     public async Task<UserDto> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
         var userEntity = await dbContext.Users.AsNoTracking()
-            .SingleOrDefaultAsync(r => r.Email.ToLower() == request.Email.ToLower(), cancellationToken);
+            .SingleOrDefaultAsync(r => r.Email == request.Email, cancellationToken);
 
         return userEntity is null
             ? throw new UserNotFoundException(request.Email)

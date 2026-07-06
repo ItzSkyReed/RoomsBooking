@@ -21,7 +21,7 @@ public class LoginCommandHandler(
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await context.Users
-            .SingleOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower(), cancellationToken);
+            .SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
 
         if (user == null)
             throw new UserNotFoundException(request.Email);

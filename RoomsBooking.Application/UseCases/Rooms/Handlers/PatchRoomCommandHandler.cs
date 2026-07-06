@@ -20,7 +20,7 @@ public class PatchRoomCommandHandler(
 
         if (request.Number != null && !request.Number.Trim().Equals(room.Number, StringComparison.CurrentCultureIgnoreCase))
         {
-            var isNumberUnique = await dbContext.Rooms.Where(r => r.Number == request.Number.Trim().ToLower()).AnyAsync(cancellationToken);
+            var isNumberUnique = await dbContext.Rooms.Where(r => r.Number == request.Number.Trim()).AnyAsync(cancellationToken);
             if (isNumberUnique)
                 throw new RoomAlreadyExistsException(request.Number);
         }
