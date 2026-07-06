@@ -67,6 +67,9 @@ namespace RoomsBooking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Token")
+                        .IsUnique();
+
                     b.ToTable("refresh_tokens", (string)null);
                 });
 

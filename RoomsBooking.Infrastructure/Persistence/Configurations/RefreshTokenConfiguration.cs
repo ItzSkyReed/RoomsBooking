@@ -1,6 +1,6 @@
-﻿using RoomsBooking.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RoomsBooking.Domain.Entities;
 
 namespace RoomsBooking.Infrastructure.Persistence.Configurations;
 
@@ -16,5 +16,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(x => x.UserId).IsRequired().HasComment("Владелец брони");
         builder.Property(x => x.Token).IsRequired();
         builder.Property(x => x.ExpiresAt).IsRequired();
+
+        builder.HasIndex(x => x.Token).IsUnique();
     }
 }

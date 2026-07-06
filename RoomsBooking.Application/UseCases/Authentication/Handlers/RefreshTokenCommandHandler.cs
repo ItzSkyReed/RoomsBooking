@@ -20,7 +20,7 @@ public class RefreshTokenCommandHandler(
     public async Task<(AccessTokenDto accessToken, string RefreshToken)> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var oldTokenEntity = await dbContext.RefreshTokens
-            .SingleOrDefaultAsync(x => x.Token == request.RefreshToken, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken, cancellationToken);
 
         if (oldTokenEntity == null || oldTokenEntity.ExpiresAt <= DateTimeOffset.UtcNow)
             throw new InvalidRefreshTokenException();
