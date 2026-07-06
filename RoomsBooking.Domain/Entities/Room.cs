@@ -6,12 +6,6 @@ public class Room
     public const int MaxNumberLength = 100;
     public const int MaxDescriptionLength = 2000;
 
-    public Guid Id { get; private set; }
-    public string Number { get; private set; } = null!;
-    public string? Description { get; private set; }
-    public short Capacity { get; private set; }
-    public short Floor { get; private set; }
-
     private Room()
     {
     } // Для EF Core
@@ -30,6 +24,14 @@ public class Room
         Capacity = capacity;
         Floor = floor;
     }
+
+    public Guid Id { get; private set; }
+    public string Number { get; private set; } = null!;
+    public string? Description { get; private set; }
+    public short Capacity { get; private set; }
+    public short Floor { get; private set; }
+
+    public IReadOnlyCollection<Booking> Bookings { get; private set; } = [];
 
     public void UpdateDetails(string? number, string? description, bool isDescriptionSet, short? capacity, short? floor)
     {

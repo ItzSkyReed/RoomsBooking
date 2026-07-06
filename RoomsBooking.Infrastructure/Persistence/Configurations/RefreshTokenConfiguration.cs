@@ -18,5 +18,10 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(x => x.ExpiresAt).IsRequired();
 
         builder.HasIndex(x => x.Token).IsUnique();
+
+        builder.HasOne<User>()
+            .WithMany(x => x.RefreshTokens)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -4,12 +4,6 @@ public class Booking
 {
     private static readonly TimeSpan MinBookingInterval = new(hours: 0, minutes: 10, seconds: 0);
 
-    public Guid Id { get; private set; }
-    public Guid RoomId { get; private set; }
-    public Guid UserId { get; private set; }
-    public DateTimeOffset StartTime { get; private set; }
-    public DateTimeOffset EndTime { get; private set; }
-
     private Booking()
     {
     } // Для EF Core
@@ -35,4 +29,13 @@ public class Booking
         StartTime = startTime;
         EndTime = endTime;
     }
+
+    public Guid Id { get; private set; }
+    public Guid RoomId { get; private set; }
+    public Guid UserId { get; private set; }
+    public DateTimeOffset StartTime { get; private set; }
+    public DateTimeOffset EndTime { get; private set; }
+
+    public User User { get; private set; } = null!;
+    public Room Room { get; private set; } = null!;
 }

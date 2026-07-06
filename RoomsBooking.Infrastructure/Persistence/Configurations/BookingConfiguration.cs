@@ -17,5 +17,15 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.StartTime).IsRequired();
         builder.Property(x => x.EndTime).IsRequired();
+
+        builder.HasOne<User>(x => x.User)
+            .WithMany(x => x.Bookings)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Room>(x => x.Room)
+            .WithMany(x => x.Bookings)
+            .HasForeignKey(x => x.RoomId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -29,6 +29,10 @@ public sealed class User
         Name = name;
     }
 
+    public IReadOnlyCollection<RefreshToken> RefreshTokens { get; private set; } = [];
+
+    public IReadOnlyCollection<Booking> Bookings { get; private set; } = [];
+
     public Guid Id { get; private set; }
 
     /// <summary>
