@@ -10,5 +10,6 @@ public static partial class RoomMapper
 {
     public static partial Room ToRoomEntity(this CreateRoomCommand command);
 
+    [MapperIgnoreSource(nameof(Room.Bookings))]
     public static partial RoomDto ToRoomDto(this Room entity);
 }
