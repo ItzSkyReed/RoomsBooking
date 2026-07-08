@@ -31,7 +31,7 @@ public class Room
     public short Capacity { get; private set; }
     public short Floor { get; private set; }
 
-    public IReadOnlyCollection<Booking> Bookings { get; private set; } = [];
+    public IReadOnlyCollection<Booking> Bookings { get; private set; } = new List<Booking>();
 
     public void UpdateDetails(string? number, string? description, bool isDescriptionSet, short? capacity, short? floor)
     {
