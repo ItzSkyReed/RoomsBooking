@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RoomsBooking.API.Requests;
+using RoomsBooking.Application.Common.Dtos;
 using RoomsBooking.Application.UseCases.Bookings.Commands;
 using RoomsBooking.Application.UseCases.Bookings.Dtos;
 using RoomsBooking.Application.UseCases.Bookings.Queries;
@@ -33,6 +34,13 @@ public static class BookingEndpoints
             .Produces<BookingDto>()
             .WithName("GetBooking")
             .WithSummary("Информация о конкретном бронирование");
+
+        group.MapGet("/", GetBookingsAsync)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .Produces<PagedResponse<BookingDto>>()
+            .WithSummary("Поиск и фильтрация бронирований");
     }
 
     private static async Task<IResult> BookRoomAsync(
@@ -46,7 +54,7 @@ public static class BookingEndpoints
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             throw new InvalidAccessTokenException();
 
-        var command = new BookRoomCommand(request.roomId, userId, request.startTime, request.endTime);
+        var command = new BookRoomCommand(request.RoomId, userId, request.StartTime, request.EndTime);
         var response = await mediator.Send(command, ct);
 
         return Results.CreatedAtRoute("GetBooking", new { id = response.Id }, response);
@@ -58,6 +66,19 @@ public static class BookingEndpoints
         CancellationToken ct)
     {
         var command = new GetBookingQuery(id);
+        var response = await mediator.Send(command, ct);
+
+        return Results.Ok(response);
+    }
+
+    private static async Task<IResult> GetBookingsAsync(
+        [AsParameters] GetBookingsRequest request,
+        [FromServices] ISender mediator,
+        CancellationToken ct)
+    {
+        var command = new GetBookingsQuery(request.RoomId, request.UserId, request.FromTime, request.ToTime,
+            request.SortBy, request.SortDescending, request.PageNumber, request.PageSize);
+
         var response = await mediator.Send(command, ct);
 
         return Results.Ok(response);
