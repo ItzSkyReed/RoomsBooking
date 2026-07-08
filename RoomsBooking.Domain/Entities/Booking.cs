@@ -2,7 +2,8 @@
 
 public class Booking
 {
-    private static readonly TimeSpan MinBookingInterval = new(hours: 0, minutes: 10, seconds: 0);
+    public static readonly TimeSpan MinBookingInterval = new(hours: 0, minutes: 10, seconds: 0);
+    public static readonly TimeSpan MaxBookingInterval = new(hours: 12, minutes: 0, seconds: 0);
 
     private Booking()
     {

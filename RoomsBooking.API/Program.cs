@@ -132,6 +132,7 @@ internal sealed partial class Program
         apiV1.MapAuthenticationEndpoints();
         apiV1.MapRoomEndpoints();
         apiV1.MapUserEndpoints();
+        apiV1.MapBookingEndpoints();
 
         Console.WriteLine(app.Environment.EnvironmentName);
         await app.RunAsync();
