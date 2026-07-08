@@ -15,7 +15,10 @@ public class GetRoomsQueryValidator : AbstractValidator<GetRoomsQuery>
             .InclusiveBetween(1, 100)
             .WithMessage("Размер страницы должен быть от 1 до 100.");
 
-        // 2. Бизнес-ограничения (совпадают с логикой Domain Entity)
+        RuleFor(x => x.PageSize * x.PageNumber)
+            .InclusiveBetween(1, 200)
+            .WithMessage("Количество комнат, полученное за раз не должно превышать 200.");
+
         RuleFor(x => x.MinCapacity)
             .GreaterThan(0)
             .When(x => x.MinCapacity.HasValue)
