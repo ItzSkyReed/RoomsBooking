@@ -27,8 +27,8 @@ public partial class GlobalExceptionHandler(
             // Ошибки самого HTTP-запроса (невалидный JSON, неверные кавычки)
             case BadHttpRequestException badHttpRequestException:
                 problemDetails.Title = "Некорректный HTTP-запрос";
-                problemDetails.Status = badHttpRequestException.StatusCode;
-                problemDetails.Detail = badHttpRequestException.InnerException?.Message ?? badHttpRequestException.Message;
+                problemDetails.Status = badHttpRequestException.StatusCode; // Обычно 400 Bad Request
+                problemDetails.Detail = "Запрос имеет неверный формат (синтаксическая ошибка в JSON или некорректные заголовки).";
                 break;
 
             // Ошибки валидации от FluentValidation
