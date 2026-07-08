@@ -26,6 +26,10 @@ public class GetRoomsQueryHandler(
             query = query.Where(r => r.Number.Contains(request.SearchTerm) ||
                                      (r.Description != null && r.Description.Contains(request.SearchTerm)));
 
+        // Общее количество записей
+        var totalCount = await query.CountAsync(cancellationToken);
+
+
         // Сортировка
         query = request.SortBy switch
         {
@@ -37,12 +41,10 @@ public class GetRoomsQueryHandler(
                 ? query.OrderByDescending(r => r.Floor)
                 : query.OrderBy(r => r.Floor),
 
-            RoomSortBy.Number or _ => request.SortDescending
+            _ => request.SortDescending
                 ? query.OrderByDescending(r => r.Number)
                 : query.OrderBy(r => r.Number)
         };
-        // Общее количество записей
-        var totalCount = await query.CountAsync(cancellationToken);
 
         // Конкретная страницу данных
         var items = await query
