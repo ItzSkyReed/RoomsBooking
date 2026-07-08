@@ -31,7 +31,7 @@ dotnet ef migrations add "Название миграции" --project RoomsBook
 <details>
   <summary>PL/PGSql код</summary>
 
-```postgresql
+```sql
 create table public."__EFMigrationsHistory"
 (
     "MigrationId"    varchar(150) not null
