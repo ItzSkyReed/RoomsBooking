@@ -28,6 +28,12 @@ internal sealed partial class Program
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
+        if (string.IsNullOrWhiteSpace(jwtOptions.SecretKey))
+            throw new InvalidOperationException(
+                "В секции 'JwtOptions' отсутствует или не заполнен 'SecretKey'. " +
+                "Приложение не может быть запущено без ключа шифрования."
+            );
+
         builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
