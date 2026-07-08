@@ -1,20 +1,17 @@
-﻿namespace RoomsBooking.Domain.Entities;
+﻿using RoomsBooking.Domain.Interfaces;
+
+namespace RoomsBooking.Domain.Entities;
 
 public sealed class RefreshToken
 {
-    public Guid Id { get; private set; }
-    public string Token { get; private set; }= null!;
-    public Guid UserId { get; private set; }
-    public DateTimeOffset ExpiresAt { get; private set; }
-
     private RefreshToken()
     {
     } // Для EF Core
 
-    public RefreshToken(Guid userId, string token, DateTimeOffset expiresAt)
+    public RefreshToken(Guid userId, string plainToken, DateTimeOffset expiresAt, ITokenHasher tokenHasher)
     {
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Токен не может быть пустым", nameof(token));
+        if (string.IsNullOrWhiteSpace(plainToken))
+            throw new ArgumentException("Токен не может быть пустым", nameof(plainToken));
 
         if (expiresAt <= DateTimeOffset.UtcNow)
             throw new ArgumentException("Срок действия токена должен быть в будущем", nameof(expiresAt));
@@ -23,8 +20,21 @@ public sealed class RefreshToken
             throw new ArgumentException("UserId не может быть пустым Guid", nameof(userId));
 
         Id = Guid.CreateVersion7();
-        Token = token;
-        ExpiresAt = expiresAt;
         UserId = userId;
+        ExpiresAt = expiresAt;
+
+        Token = tokenHasher.Hash(plainToken);
+    }
+
+    public Guid Id { get; private set; }
+
+    // Теперь здесь хранится SHA256 хэш, а не голый токен
+    public string Token { get; private set; } = null!;
+    public Guid UserId { get; private set; }
+    public DateTimeOffset ExpiresAt { get; private set; }
+
+    public bool IsValid(string plainToken, ITokenHasher tokenHasher)
+    {
+        return DateTimeOffset.UtcNow < ExpiresAt && tokenHasher.Verify(plainToken, Token);
     }
 }

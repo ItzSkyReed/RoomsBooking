@@ -11,6 +11,7 @@ using RoomsBooking.API.OpenApi;
 using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.Common.Behaviors;
 using RoomsBooking.Application.Interfaces;
+using RoomsBooking.Domain.Interfaces;
 using RoomsBooking.Infrastructure.Authentication;
 using RoomsBooking.Infrastructure.Persistence;
 using Scalar.AspNetCore;
@@ -78,6 +79,7 @@ internal sealed partial class Program
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
 
         builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
+        builder.Services.AddSingleton<ITokenHasher, Sha256TokenHasher>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<JwtOptions>();
 

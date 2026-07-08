@@ -7,6 +7,7 @@ using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.UseCases.Authentication.Dtos;
 using RoomsBooking.Domain.Entities;
 using RoomsBooking.Domain.Exceptions.User;
+using RoomsBooking.Domain.Interfaces;
 using UserMapper = RoomsBooking.Application.UseCases.Users.Mappers.UserMapper;
 
 namespace RoomsBooking.Application.UseCases.Authentication.Handlers;
@@ -15,7 +16,8 @@ public class RegisterCommandHandler(
     IAppDbContext dbContext,
     IPasswordHasher passwordHasher,
     IJwtProvider jwtProvider,
-    IOptions<JwtOptions> jwtOptions)
+    IOptions<JwtOptions> jwtOptions,
+    ITokenHasher tokenHasher)
     : IRequestHandler<RegisterCommand, (AuthResponseDto Body, string RefreshToken)>
 {
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -35,7 +37,7 @@ public class RegisterCommandHandler(
         var expirationDays = jwtOptions.Value.RefreshTokenExpirationDays;
         var expiresAt = DateTimeOffset.UtcNow.AddDays(expirationDays);
 
-        var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, expiresAt);
+        var refreshTokenEntity = new RefreshToken(user.Id, refreshToken, expiresAt, tokenHasher);
 
         dbContext.RefreshTokens.Add(refreshTokenEntity);
         dbContext.Users.Add(user);
