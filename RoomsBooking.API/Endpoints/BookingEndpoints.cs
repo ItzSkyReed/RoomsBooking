@@ -51,6 +51,13 @@ public static class BookingEndpoints
             .ProducesValidationProblem()
             .Produces<List<BookingDto>>()
             .WithSummary("Все брони пользователя");
+
+        group.MapPatch("/{id:guid}", PatchBookingAsync)
+            .ProducesValidationProblem()
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status403Forbidden)
+            .Produces(StatusCodes.Status204NoContent)
+            .WithSummary("Изменение имеющейся брони создателем");
     }
 
     private static async Task<IResult> BookRoomAsync(
@@ -125,5 +132,23 @@ public static class BookingEndpoints
         var response = await mediator.Send(command, ct);
 
         return Results.Ok(response);
+    }
+
+    private static async Task<IResult> PatchBookingAsync(
+        [FromRoute] Guid id,
+        [FromBody] PatchBookingsRequest request,
+        [FromServices] ISender mediator,
+        ClaimsPrincipal user,
+        CancellationToken ct)
+    {
+        var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            throw new InvalidAccessTokenException();
+
+        var command = new PatchBookingCommand(id, userId, request.RoomId, request.StartTime, request.EndTime);
+        await mediator.Send(command, ct);
+
+        return Results.NoContent();
     }
 }

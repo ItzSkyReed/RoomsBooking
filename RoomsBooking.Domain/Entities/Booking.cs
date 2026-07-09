@@ -1,4 +1,7 @@
-﻿namespace RoomsBooking.Domain.Entities;
+﻿using RoomsBooking.Domain.Exceptions;
+using RoomsBooking.Domain.Exceptions.Bookings;
+
+namespace RoomsBooking.Domain.Entities;
 
 public class Booking
 {
@@ -39,4 +42,26 @@ public class Booking
 
     public User User { get; private set; } = null!;
     public Room Room { get; private set; } = null!;
+
+    public void UpdateDetails(Guid? roomId, DateTimeOffset? startTime, DateTimeOffset? endTime)
+    {
+        if (startTime.HasValue)
+            if (startTime <= DateTimeOffset.UtcNow)
+                throw new BookingStartTimeInPastException();
+
+            else if (endTime - startTime < MinBookingInterval)
+                throw new BookingPeriodTooShortException(MinBookingInterval.Minutes);
+
+            else
+                StartTime = startTime.Value;
+
+        if (roomId.HasValue)
+            if (roomId == Guid.Empty)
+                throw new EmptyFieldException(nameof(roomId));
+            else
+                RoomId = roomId.Value;
+
+        if (endTime.HasValue)
+            EndTime = endTime.Value;
+    }
 }

@@ -18,7 +18,7 @@ public class DeleteBookingCommandHandler(
             return Unit.Value;
 
         if (booking.UserId != request.UserId)
-            throw new BookingDeletionForbiddenException(request.BookingId);
+            throw new BookingForbiddenAccessException(request.BookingId);
 
         dbContext.Bookings.Remove(booking);
 

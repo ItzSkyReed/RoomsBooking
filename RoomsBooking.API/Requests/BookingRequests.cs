@@ -14,3 +14,9 @@ public record GetBookingsRequest(
     int PageNumber = 1,
     int PageSize = 20
 );
+
+public record PatchBookingsRequest(
+    Guid? RoomId,
+    DateTimeOffset? StartTime,
+    DateTimeOffset? EndTime
+);

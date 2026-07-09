@@ -66,6 +66,15 @@ public partial class GlobalExceptionHandler(
                     problemDetails.Extensions["fields"] = new[] { conflictException.Field };
                 break;
 
+            case DomainBadRequestException badRequestException:
+                problemDetails.Title = "Некорректный запрос";
+                problemDetails.Status = StatusCodes.Status400BadRequest;
+                problemDetails.Detail = badRequestException.Message;
+
+                if (badRequestException.Field != null)
+                    problemDetails.Extensions["errors"] = new[] { badRequestException.Field };
+                break;
+
             // Все остальные непредвиденные ошибки
             default:
                 LogUnexpectedHandlerException(exception.Message, exception); // Логируем именно непредвиденные
