@@ -13,25 +13,21 @@ public static class UserEndpoints
     {
         var group = app.MapGroup("/users")
             .WithTags("Users")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapGet("/me", GetMeAsync)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<UserDto>()
             .WithSummary("Получение информации о своем профиле");
 
         group.MapGet("/{id:guid}", GetUserByIdAsync)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<UserDto>()
             .WithSummary("Получение информации о пользователе по UUID");
 
         group.MapGet("/{email}", GetUserByEmailAsync)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<UserDto>()
             .WithSummary("Получение информации о пользователе по Email");

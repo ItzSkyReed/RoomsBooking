@@ -16,11 +16,12 @@ public static class BookingEndpoints
     {
         var group = app.MapGroup("/bookings")
             .WithTags("Bookings")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/", BookRoomAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<BookingDto>(StatusCodes.Status201Created)
@@ -29,7 +30,6 @@ public static class BookingEndpoints
 
         group.MapGet("/{id:guid}", GetBookingAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<BookingDto>()
             .WithName("GetBooking")
@@ -37,7 +37,6 @@ public static class BookingEndpoints
 
         group.MapGet("/", GetBookingsAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<PagedResponse<BookingDto>>()
             .WithSummary("Поиск и фильтрация бронирований");

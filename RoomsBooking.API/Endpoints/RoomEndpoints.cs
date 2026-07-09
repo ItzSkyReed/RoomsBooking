@@ -14,12 +14,12 @@ public static class RoomEndpoints
     {
         var group = app.MapGroup("/rooms")
             .WithTags("Room")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/", CreateRoomAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces<RoomDto>(StatusCodes.Status201Created)
             .WithSummary("Добавление новой переговорной комнаты")
@@ -27,15 +27,11 @@ public static class RoomEndpoints
 
         group.MapGet("/{id:guid}", GetRoomByIdAsync)
             .WithName("GetRoomById")
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<RoomDto>()
             .WithSummary("Получение информации о переговорной комнате  по Id");
 
         group.MapDelete("/{id:guid}", DeleteRoomByIdAsync)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по Id");
@@ -43,16 +39,12 @@ public static class RoomEndpoints
 
         group.MapDelete("/{number}", DeleteRoomByNumberAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status204NoContent)
             .WithSummary("Удаление переговорной комнаты по номеру");
 
         group.MapPatch("/{id:guid}", PatchRoomAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status204NoContent)
@@ -60,8 +52,6 @@ public static class RoomEndpoints
 
         group.MapGet("/", GetRoomsAsync)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .Produces<PagedResponse<RoomDto>>()
             .WithSummary("Поиск и фильтрация комнат");
     }

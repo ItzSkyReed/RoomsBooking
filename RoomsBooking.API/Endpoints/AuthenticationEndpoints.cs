@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RoomsBooking.API.Requests;
+using RoomsBooking.Application.Common.Authentication;
 using RoomsBooking.Application.UseCases.Authentication.Commands;
 using RoomsBooking.Application.UseCases.Authentication.Dtos;
-using RoomsBooking.Application.Common.Authentication;
 
 namespace RoomsBooking.API.Endpoints;
 
@@ -15,7 +15,8 @@ public static class AuthenticationEndpoints
     public static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/auth")
-            .WithTags("Authentication");
+            .WithTags("Authentication")
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/register", RegisterAsync)
             .ProducesProblem(StatusCodes.Status409Conflict)
