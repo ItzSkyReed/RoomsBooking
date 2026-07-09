@@ -50,6 +50,13 @@ public partial class GlobalExceptionHandler(
                 problemDetails.Detail = notFoundException.Message;
                 break;
 
+            // Ошибки прав
+            case ForbiddenException forbiddenException:
+                problemDetails.Title = "Недостаточно прав для совершения действия";
+                problemDetails.Status = StatusCodes.Status403Forbidden;
+                problemDetails.Detail = forbiddenException.Message;
+                break;
+
             case ConflictException conflictException:
                 problemDetails.Title = "Конфликт бизнес-логики";
                 problemDetails.Status = StatusCodes.Status409Conflict;

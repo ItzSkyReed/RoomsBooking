@@ -41,6 +41,12 @@ public static class BookingEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .Produces<PagedResponse<BookingDto>>()
             .WithSummary("Поиск и фильтрация бронирований");
+
+        group.MapDelete("/{id:guid}", DeleteBookingAsync)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .Produces<PagedResponse<BookingDto>>()
+            .WithSummary("Удаление брони");
     }
 
     private static async Task<IResult> BookRoomAsync(
@@ -82,5 +88,22 @@ public static class BookingEndpoints
         var response = await mediator.Send(command, ct);
 
         return Results.Ok(response);
+    }
+
+    private static async Task<IResult> DeleteBookingAsync(
+        [FromRoute] Guid id,
+        [FromServices] ISender mediator,
+        ClaimsPrincipal user,
+        CancellationToken ct)
+    {
+        var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            throw new InvalidAccessTokenException();
+
+        var command = new DeleteBookingCommand(id, userId);
+        await mediator.Send(command, ct);
+
+        return Results.NoContent();
     }
 }
