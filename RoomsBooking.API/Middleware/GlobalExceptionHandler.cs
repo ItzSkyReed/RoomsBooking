@@ -1,16 +1,12 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using RoomsBooking.Domain.Exceptions.Base;
-using RoomsBooking.Infrastructure.Persistence;
 
 namespace RoomsBooking.API.Middleware;
 
 public partial class GlobalExceptionHandler(
-    ILogger<GlobalExceptionHandler> logger,
-    UniqueConstraintResolver constraintResolver) : IExceptionHandler
+    ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -54,36 +50,13 @@ public partial class GlobalExceptionHandler(
                 problemDetails.Detail = notFoundException.Message;
                 break;
 
-            // Ошибки конфликтов (Пользователь существует, время занято)
             case ConflictException conflictException:
                 problemDetails.Title = "Конфликт бизнес-логики";
                 problemDetails.Status = StatusCodes.Status409Conflict;
-                problemDetails.Detail = conflictException.Message; // Текст из конкретной ошибки
-                break;
+                problemDetails.Detail = conflictException.Message;
 
-            case DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pgEx }:
-
-                problemDetails.Title = "Конфликт данных";
-                problemDetails.Status = StatusCodes.Status409Conflict;
-
-                if (constraintResolver.TryGetFields(pgEx.ConstraintName!, out var fields))
-                {
-                    problemDetails.Detail = $"Значение для поля(полей) {string.Join(", ", fields)} уже существует.";
-                    problemDetails.Extensions["fields"] = fields;
-                }
-                else
-                    problemDetails.Detail = "Запись с такими параметрами уже существует.";
-
-                break;
-
-            case DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.ExclusionViolation } pgEx }:
-                problemDetails.Title = "Конфликт бронирования";
-                problemDetails.Status = StatusCodes.Status409Conflict;
-
-                if (pgEx.ConstraintName == "EXCLUDE_overlapping_bookings")
-                    problemDetails.Detail = "Выбранное время для этой комнаты пересекается с уже существующим бронированием.";
-                else
-                    problemDetails.Detail = "Произошло недопустимое пересечение данных.";
+                if (conflictException.Field != null)
+                    problemDetails.Extensions["fields"] = new[] { conflictException.Field };
                 break;
 
             // Все остальные непредвиденные ошибки

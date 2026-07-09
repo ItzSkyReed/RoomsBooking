@@ -17,7 +17,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(x => x.Token).IsRequired();
         builder.Property(x => x.ExpiresAt).IsRequired();
 
-        builder.HasIndex(x => x.Token).IsUnique();
+        builder.HasIndex(x => x.Token).IsUnique().HasDatabaseName("ix_refresh_tokens_token");
 
         builder.HasOne<User>()
             .WithMany(x => x.RefreshTokens)

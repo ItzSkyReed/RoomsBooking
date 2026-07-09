@@ -18,6 +18,6 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(x => x.Floor).IsRequired();
         builder.Property(x => x.Description).IsRequired(false).HasMaxLength(2000);
 
-        builder.HasIndex(x => x.Number).IsUnique();
+        builder.HasIndex(x => x.Number).IsUnique().HasDatabaseName("ix_rooms_number");
     }
 }

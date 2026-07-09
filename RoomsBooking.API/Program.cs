@@ -62,19 +62,11 @@ internal sealed partial class Program
         builder.Services.AddAuthorization();
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+                .AddInterceptors(new ExceptionTranslationInterceptor()));
 
         builder.Services.AddScoped<IAppDbContext>(provider =>
             provider.GetRequiredService<AppDbContext>());
-
-        builder.Services.AddSingleton<UniqueConstraintResolver>(sp =>
-        {
-            // временный scope только для того, чтобы вытащить IModel
-            using var scope = sp.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            return new UniqueConstraintResolver(dbContext.Model);
-        });
 
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
 

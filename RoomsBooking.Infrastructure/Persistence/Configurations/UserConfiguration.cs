@@ -20,6 +20,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
 
-        builder.HasIndex(x => x.Email).IsUnique();
+        builder.HasIndex(x => x.Email).IsUnique().HasDatabaseName("ix_users_email");
     }
 }
