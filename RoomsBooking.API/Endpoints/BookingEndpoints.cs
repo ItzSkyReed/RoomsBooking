@@ -46,6 +46,11 @@ public static class BookingEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .Produces<PagedResponse<BookingDto>>()
             .WithSummary("Удаление брони");
+
+        group.MapDelete("/me", GetMyBookingsAsync)
+            .ProducesValidationProblem()
+            .Produces<List<BookingDto>>()
+            .WithSummary("Все брони пользователя");
     }
 
     private static async Task<IResult> BookRoomAsync(
@@ -104,5 +109,21 @@ public static class BookingEndpoints
         await mediator.Send(command, ct);
 
         return Results.NoContent();
+    }
+
+    private static async Task<IResult> GetMyBookingsAsync(
+        [FromServices] ISender mediator,
+        ClaimsPrincipal user,
+        CancellationToken ct)
+    {
+        var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            throw new InvalidAccessTokenException();
+
+        var command = new GetUserBookingsQuery(userId);
+        var response = await mediator.Send(command, ct);
+
+        return Results.Ok(response);
     }
 }
