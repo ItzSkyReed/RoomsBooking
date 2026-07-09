@@ -23,7 +23,7 @@ public class RegisterCommandHandler(
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var emailExists = await dbContext.Users
-            .AnyAsync(u => u.Email == request.Email, cancellationToken);
+            .AsNoTracking().AnyAsync(u => u.Email == request.Email, cancellationToken);
 
         if (emailExists)
             throw new UserAlreadyExistsException(request.Email);

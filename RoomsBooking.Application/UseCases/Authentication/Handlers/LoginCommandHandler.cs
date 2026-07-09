@@ -22,7 +22,7 @@ public class LoginCommandHandler(
 {
     public async Task<(AuthResponseDto Body, string RefreshToken)> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await context.Users
+        var user = await context.Users.AsNoTracking()
             .SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
 
         if (user == null)

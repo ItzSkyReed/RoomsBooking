@@ -14,7 +14,7 @@ public class GetBookingsQueryHandler(
 {
     public async Task<PagedResponse<BookingDto>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
     {
-        var query = dbContext.Bookings.AsQueryable();
+        var query = dbContext.Bookings.AsQueryable().AsNoTracking();
 
         if (request.RoomId.HasValue)
             query = query.Where(r => r.RoomId == request.RoomId.Value);

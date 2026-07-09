@@ -30,7 +30,7 @@ public class RefreshTokenCommandHandler(
             throw new InvalidRefreshTokenException();
 
 
-        var user = await dbContext.Users
+        var user = await dbContext.Users.AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == oldTokenHash.UserId, cancellationToken);
 
         if (user == null)

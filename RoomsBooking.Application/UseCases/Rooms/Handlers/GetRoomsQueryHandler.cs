@@ -14,7 +14,7 @@ public class GetRoomsQueryHandler(
 {
     public async Task<PagedResponse<RoomDto>> Handle(GetRoomsQuery request, CancellationToken cancellationToken)
     {
-        var query = dbContext.Rooms.AsQueryable();
+        var query = dbContext.Rooms.AsQueryable().AsNoTracking();
 
         if (request.MinCapacity.HasValue)
             query = query.Where(r => r.Capacity >= request.MinCapacity.Value);

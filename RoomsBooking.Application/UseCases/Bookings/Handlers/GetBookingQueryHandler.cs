@@ -15,6 +15,7 @@ public class GetBookingQueryHandler(
     public async Task<BookingDto> Handle(GetBookingQuery request, CancellationToken cancellationToken)
     {
         var bookingDto = await dbContext.Bookings
+            .AsNoTracking()
             .Where(x => x.Id == request.Id)
             .ProjectToDto()
             .FirstOrDefaultAsync(cancellationToken);

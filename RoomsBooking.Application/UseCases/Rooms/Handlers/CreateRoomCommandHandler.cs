@@ -15,7 +15,7 @@ public class CreateRoomCommandHandler(
     public async Task<RoomDto> Handle(CreateRoomCommand request, CancellationToken cancellationToken)
     {
         var roomExists = await dbContext.Rooms
-            .AnyAsync(r => r.Number == request.Number.Trim(), cancellationToken);
+            .AsNoTracking().AnyAsync(r => r.Number == request.Number.Trim(), cancellationToken);
 
         if (roomExists)
             throw new RoomAlreadyExistsException(request.Number);

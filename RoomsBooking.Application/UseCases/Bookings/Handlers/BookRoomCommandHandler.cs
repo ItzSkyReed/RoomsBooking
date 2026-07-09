@@ -16,7 +16,7 @@ public class BookRoomCommandHandler(
 {
     public async Task<BookingDto> Handle(BookRoomCommand request, CancellationToken cancellationToken)
     {
-        if (!await dbContext.Rooms.AnyAsync(r => r.Id == request.RoomId, cancellationToken))
+        if (!await dbContext.Rooms.AsNoTracking().AnyAsync(r => r.Id == request.RoomId, cancellationToken))
             throw new RoomNotFoundException(request.RoomId);
 
         var userName = await dbContext.Users
