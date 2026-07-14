@@ -32,8 +32,8 @@ public class RegisterTests(CustomWebApplicationFactory factory) : BaseIntegratio
 
         // Проверяем, что установилась кука с refresh-токеном и она HttpOnly
         var setCookieHeaders = response.Headers.GetValues("Set-Cookie").ToList();
-        setCookieHeaders.Should().Contain(c => c.StartsWith("refreshToken="));
-        setCookieHeaders.Should().Contain(c => c.Contains("HttpOnly"));
+        setCookieHeaders.Should().Contain(c => c.StartsWith("refreshToken=", StringComparison.OrdinalIgnoreCase));
+        setCookieHeaders.Should().Contain(c => c.Contains("HttpOnly", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
