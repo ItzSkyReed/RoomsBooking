@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RoomsBooking.API.Endpoints;
+using RoomsBooking.API.HostedServices;
 using RoomsBooking.API.Middleware;
 using RoomsBooking.API.OpenApi;
 using RoomsBooking.Application.Common.Authentication;
@@ -97,6 +98,9 @@ public sealed partial class Program
 
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
+
+        // Сервис для удаления протухших токенов
+        builder.Services.AddHostedService<ExpiredTokensCleanupService>();
 
         var app = builder.Build();
 
