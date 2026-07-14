@@ -18,7 +18,7 @@ using Scalar.AspNetCore;
 
 namespace RoomsBooking.API;
 
-internal sealed partial class Program
+public sealed partial class Program
 {
     public static async Task Main(string[] args)
     {
