@@ -47,7 +47,7 @@ public static class BookingEndpoints
             .Produces<PagedResponse<BookingDto>>()
             .WithSummary("Удаление брони");
 
-        group.MapDelete("/me", GetMyBookingsAsync)
+        group.MapGet("/me", GetMyBookingsAsync)
             .ProducesValidationProblem()
             .Produces<List<BookingDto>>()
             .WithSummary("Все брони пользователя");
